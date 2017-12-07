@@ -168,6 +168,17 @@ Deselect dates
 - (void)deselectDatesAnimated:(BOOL)animated;
 
 ///-------------------------
+/// @name Accessing cells
+///-------------------------
+
+/**
+ Returns the cell view for the given index path
+
+ @param indexPath The index path of the cell. Returns nil if there is no cell.
+ */
+- (RSDFDatePickerDayCell * __nullable)cellForItemAtIndexPath:(NSIndexPath * __nonnull)indexPath;
+
+///-------------------------
 /// @name Reloading the Data
 ///-------------------------
 
@@ -267,7 +278,7 @@ Deselect dates
  @param view The view whose date was selected.
  @param date The selected date.
  */
-- (void)datePickerView:(RSDFDatePickerView * __nonnull)view didSelectDate:(NSDate * __nonnull)date;
+- (void)datePickerView:(RSDFDatePickerView * __nonnull)view didSelectDate:(NSDate * __nonnull)date fromIndexPath:(NSIndexPath * __nonnull)indexPath;
 
 /**
  Tells the delegate that the user did select a date in RSDFSelectionModeRange.

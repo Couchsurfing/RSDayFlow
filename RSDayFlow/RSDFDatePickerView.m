@@ -402,6 +402,11 @@ static NSString * const RSDFDatePickerViewDayCellIdentifier = @"RSDFDatePickerVi
     [self restoreSelection];
 }
 
+- (RSDFDatePickerDayCell *)cellForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    return [self.collectionView cellForItemAtIndexPath:indexPath];
+}
+
 #pragma mark - Private
 
 - (void)updateCalendarTodayDate {
@@ -421,8 +426,8 @@ static NSString * const RSDFDatePickerViewDayCellIdentifier = @"RSDFDatePickerVi
         case RSDFSelectionModeSingle: {
             [self selectDate:date];
             
-            if ([self.delegate respondsToSelector:@selector(datePickerView:didSelectDate:)]) {
-                [self.delegate datePickerView:self didSelectDate:date];
+            if ([self.delegate respondsToSelector:@selector(datePickerView:didSelectDate:fromIndexPath:)]) {
+                [self.delegate datePickerView:self didSelectDate:date fromIndexPath:indexPath];
             }
             
             break;
