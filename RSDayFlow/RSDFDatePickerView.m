@@ -480,9 +480,7 @@ static NSString * const RSDFDatePickerViewDayCellIdentifier = @"RSDFDatePickerVi
     if (self.selectedStartDateRange != nil &&
         [date compare:self.selectedStartDateRange] == NSOrderedAscending) {
         NSIndexPath *previousIndexPath = [self indexPathForDate:self.selectedStartDateRange];
-        [self.collectionView deselectItemAtIndexPath:previousIndexPath
-                                            animated:YES
-                                      scrollPosition:UICollectionViewScrollPositionNone];
+        [self.collectionView deselectItemAtIndexPath:previousIndexPath animated:YES];
         _selectedStartDateRange = nil;
     }
 
