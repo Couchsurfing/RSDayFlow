@@ -325,7 +325,7 @@ static NSString * const RSDFDatePickerViewDayCellIdentifier = @"RSDFDatePickerVi
     if (delta <= actualViewHeight) {
         [self scrollToTopOfSection:monthSection animated:animated];
     } else {
-        [cv scrollToItemAtIndexPath:dateItemIndexPath atScrollPosition:UICollectionViewScrollPositionBottom animated:animated];
+        [cv scrollToItemAtIndexPath:dateItemIndexPath atScrollPosition:UICollectionViewScrollPositionTop animated:animated];
     }
 }
 
@@ -917,23 +917,27 @@ static NSString * const RSDFDatePickerViewDayCellIdentifier = @"RSDFDatePickerVi
     cell.delegate = self;
     
     NSDate *firstDayInMonth = [self dateForFirstDayInSection:indexPath.section];
-    RSDFDatePickerDate firstDayPickerDate = [self pickerDateFromDate:firstDayInMonth];
-    NSUInteger weekday = [self reorderedWeekday:[self.calendar components:NSCalendarUnitWeekday fromDate:firstDayInMonth].weekday];
+    NSUInteger firstDayInMonthWeekday = [self reorderedWeekday:[self.calendar components:NSCalendarUnitWeekday fromDate:firstDayInMonth].weekday];
     
     NSDate *cellDate = [self.calendar dateByAddingComponents:((^{
         NSDateComponents *dateComponents = [NSDateComponents new];
-        dateComponents.day = indexPath.item - weekday;
+        dateComponents.day = indexPath.item - firstDayInMonthWeekday;
         return dateComponents;
     })()) toDate:firstDayInMonth options:0];
     RSDFDatePickerDate cellPickerDate = [self pickerDateFromDate:cellDate];
     
     cell.date = cellPickerDate;
     cell.dateLabel.text = [NSString stringWithFormat:@"%lu", (unsigned long)(cellPickerDate.day)];
-    
+
+    RSDFDatePickerDate firstDayPickerDate = [self pickerDateFromDate:firstDayInMonth];
     cell.notThisMonth = !((firstDayPickerDate.year == cellPickerDate.year) && (firstDayPickerDate.month == cellPickerDate.month));
+
+    cell.dateLabel.isAccessibilityElement = NO;
+    cell.isAccessibilityElement = !cell.notThisMonth;
+
     if (!cell.isNotThisMonth) {
-        weekday = [self.calendar components:NSCalendarUnitWeekday fromDate:cellDate].weekday;
-        cell.dayOff = (weekday == 1) || (weekday == 7);
+        NSUInteger cellDateWeekday = [self.calendar components:NSCalendarUnitWeekday fromDate:cellDate].weekday;
+        cell.dayOff = (cellDateWeekday == 1) || (cellDateWeekday == 7);
         
         if ([self.dataSource respondsToSelector:@selector(datePickerView:shouldMarkDate:)]) {
             cell.marked = [self.dataSource datePickerView:self shouldMarkDate:cellDate];
@@ -946,21 +950,41 @@ static NSString * const RSDFDatePickerViewDayCellIdentifier = @"RSDFDatePickerVi
                 }
             }
         }
-        
+
         NSComparisonResult result = [_today compare:cellDate];
-        cell.today = (result == NSOrderedSame);
-        cell.pastDate = (result == NSOrderedDescending);
-		
+        switch (result) {
+            case NSOrderedSame: {
+                cell.today = YES;
+                cell.pastDate = NO;
+                break;
+            }
+            case NSOrderedDescending: {
+                cell.today = NO;
+                cell.pastDate = YES;
+                break;
+            }
+            case NSOrderedAscending: {
+                cell.today = NO;
+                cell.pastDate = NO;
+                break;
+            }
+        }
+
         if ((self.startDate && [cellDate compare:self.startDate] == NSOrderedAscending) ||
             (self.endDate && [cellDate compare:self.endDate] == NSOrderedDescending)) {
             cell.outOfRange = YES;
         } else {
             cell.outOfRange = NO;
         }
+
+        cell.accessibilityLabel = [NSDateFormatter localizedStringFromDate:cellDate dateStyle:NSDateFormatterLongStyle timeStyle:NSDateFormatterNoStyle];
+    } else {
+        // Setting accessibilityLabel to nil as isAccessibilityElement property does not update properly sometimes
+        cell.accessibilityLabel = nil;
     }
     
     [cell setNeedsDisplay];
-    
+
     return cell;
 }
 
