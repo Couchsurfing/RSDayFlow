@@ -417,8 +417,7 @@ static NSString * const RSDFDatePickerViewDayCellIdentifier = @"RSDFDatePickerVi
     [self restoreSelection];
 }
 
-- (void)handleSelectAndDeselect:(NSIndexPath *)indexPath
-{
+- (void)handleSelectAndDeselect:(NSIndexPath *)indexPath {
     RSDFDatePickerDayCell *cell = ((RSDFDatePickerDayCell *)[self.collectionView cellForItemAtIndexPath:indexPath]);
     NSDate *date = cell ? [self dateFromPickerDate:cell.date] : nil;
     
@@ -446,7 +445,8 @@ static NSString * const RSDFDatePickerViewDayCellIdentifier = @"RSDFDatePickerVi
         case RSDFSelectionModeRange: {
             [self selectDateInDateRange:date];
             
-            if ([self.delegate respondsToSelector:@selector(datePickerView:didSelectStartDate:endDate:)]) {
+            if (self.selectedStartDateRange != nil && self.selectedEndDateRange != nil &&
+                [self.delegate respondsToSelector:@selector(datePickerView:didSelectStartDate:endDate:)]) {
                 [self.delegate datePickerView:self didSelectStartDate:self.selectedStartDateRange endDate:self.selectedEndDateRange];
             }
             
