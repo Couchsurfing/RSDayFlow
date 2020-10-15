@@ -71,11 +71,11 @@
 {
     self.backgroundColor = [self selfBackgroundColor];
     
-    [self addSubview:self.selectedDayImageView];
-    [self addSubview:self.overlayImageView];
-    [self addSubview:self.markImageView];
-    [self addSubview:self.dividerImageView];
-    [self addSubview:self.dateLabel];
+    [self.contentView addSubview:self.selectedDayImageView];
+    [self.contentView addSubview:self.overlayImageView];
+    [self.contentView addSubview:self.markImageView];
+    [self.contentView addSubview:self.dividerImageView];
+    [self.contentView addSubview:self.dateLabel];
     
     [self updateSubviews];
 }
